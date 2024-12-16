@@ -1,0 +1,28 @@
+{
+  "expo": {
+    "name": "dWas",
+    "slug": "dWas",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icons/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/icons/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ECE1D8"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icons/adaptive-icon.png",
+        "backgroundColor": "#ECE1D8"
+      }
+    },
+    "web": {
+      "favicon": "./assets/icons/favicon.png"
+    }
+  }
+}

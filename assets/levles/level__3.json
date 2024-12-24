@@ -1,0 +1,102 @@
+[
+    {
+        "artikel": "die",
+        "substantiv": "Autonomie",
+        "satz": "Autonomie beschreibt Systeme, die keine menschliche Intervention erfordern."
+      },
+      {
+        "artikel": "die",
+        "substantiv": "Kybernetik",
+        "satz": "Kybernetik untersucht die Regelung und Steuerung in Maschinen und lebenden Systemen."
+      },
+      {
+        "artikel": "der",
+        "substantiv": "Algorithmus",
+        "satz": "Algorithmus ist eine Abfolge von Anweisungen zur Lösung eines Problems."
+      },
+      {
+        "artikel": "das",
+        "substantiv": "Quantencomputing",
+        "satz": "Quantencomputing nutzt die Prinzipien der Quantenmechanik zur Datenverarbeitung."
+      },
+      {
+        "artikel": "die",
+        "substantiv": "Neuroinformatik",
+        "satz": "Neuroinformatik kombiniert Neurowissenschaften und Informatik zur Analyse neuronaler Daten."
+      },
+      {
+        "artikel": "die",
+        "substantiv": "Biotechnologie",
+        "satz": "Biotechnologie nutzt biologische Systeme, um Produkte herzustellen."
+      },
+      {
+        "artikel": "die",
+        "substantiv": "Kryptographie",
+        "satz": "Kryptographie schützt Informationen durch Verschlüsselung."
+      },
+      {
+        "artikel": "der",
+        "substantiv": "Nanopartikel",
+        "satz": "Nanopartikel findet Anwendung in der Medizin und Materialwissenschaft."
+      },
+      {
+        "artikel": "die",
+        "substantiv": "Mikroelektronik",
+        "satz": "Mikroelektronik ist die Technologie der Herstellung von extrem kleinen elektronischen Bauteilen."
+      },
+      {
+        "artikel": "die",
+        "substantiv": "Optoelektronik",
+        "satz": "Optoelektronik kombiniert optische und elektronische Technologien."
+      },
+      {
+        "artikel": "die",
+        "substantiv": "Telemetrie",
+        "satz": "Telemetrie ist die Messung und Übertragung von Daten aus der Ferne."
+      },
+      {
+        "artikel": "die",
+        "substantiv": "Datenverschlüsselung",
+        "satz": "Datenverschlüsselung schützt sensible Informationen vor unbefugtem Zugriff."
+      },
+      {
+        "artikel": "die",
+        "substantiv": "Robotik",
+        "satz": "Robotik entwickelt Maschinen, die Aufgaben autonom ausführen können."
+      },
+      {
+        "artikel": "die",
+        "substantiv": "Simulation",
+        "satz": "Simulation hilft dabei, komplexe Systeme zu modellieren und zu verstehen."
+      },
+      {
+        "artikel": "die",
+        "substantiv": "Turbine",
+        "satz": "Turbine wandelt kinetische Energie in mechanische Energie um."
+      },
+      {
+        "artikel": "die",
+        "substantiv": "Supraleitung",
+        "satz": "Supraleitung ist ein Phänomen, bei dem elektrische Widerstände in Materialien auf Null fallen."
+      },
+      {
+        "artikel": "das",
+        "substantiv": "Protokoll",
+        "satz": "Protokoll wird in Netzwerken verwendet, um die Kommunikation zwischen Geräten zu standardisieren."
+      },
+      {
+        "artikel": "die",
+        "substantiv": "Photonik",
+        "satz": "Photonik befasst sich mit der Erzeugung und Manipulation von Licht."
+      },
+      {
+        "artikel": "die",
+        "substantiv": "Synthetische Biologie",
+        "satz": "Synthetische Biologie konstruiert neue biologische Systeme."
+      },
+      {
+        "artikel": "die",
+        "substantiv": "Astrobiologie",
+        "satz": "Astrobiologie erforscht die Möglichkeit von Leben außerhalb der Erde."
+      }
+]

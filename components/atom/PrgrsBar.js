@@ -6,8 +6,10 @@ import theme from '../../constants/theme';
 const PrgrsBar = ({ progress, style, totalSteps = 20 }) => {
   return (
     <View style={[styles.container, style]}>
-      <View style={[styles.progress, { width: `${progress * 100}%` }]} >
-      <View style={[styles.highlight, { width: `${progress * 100}% - 10px` }]} />
+      <View style={[styles.progress, { width: `${progress * 100}%` }]}>
+        <View
+          style={[styles.highlight, { width: `${progress * 100}% - 10px` }]}
+        />
       </View>
     </View>
   );
@@ -37,7 +39,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 0,
     top: 0,
-    justifyContent: 'center', 
+    justifyContent: 'center',
   },
   highlight: {
     height: '20%',

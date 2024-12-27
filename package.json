@@ -5,7 +5,8 @@
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "format": "prettier --write ."
   },
   "dependencies": {
     "@expo-google-fonts/nunito": "^0.2.3",
@@ -19,7 +20,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
-    "prettier": "^3.0.0-alpha.6"
+    "prettier": "^3.4.2"
   },
   "private": true
 }

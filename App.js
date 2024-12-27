@@ -3,7 +3,7 @@ import { StyleSheet, Text, SafeAreaView, Button, View } from 'react-native';
 import { useFonts } from 'expo-font';
 import { StatusBar } from 'expo-status-bar';
 
-import theme from './constants/theme'; 
+import theme from './constants/theme';
 import ArticleBtns from './components/block/ArticleBtns';
 import Btn from './components/atom/Btn';
 import PrgrsBar from './components/atom/PrgrsBar';
@@ -11,7 +11,7 @@ import PrgrsBar from './components/atom/PrgrsBar';
 export default function App() {
   // Load fonts
   const [fontsLoaded] = useFonts({
-    'Nunito': require('./assets/fonts/Nunito-VariableFont_wght.ttf'),
+    Nunito: require('./assets/fonts/Nunito-VariableFont_wght.ttf'),
   });
 
   const [progress, setProgress] = useState(0); // Example progress value
@@ -31,7 +31,9 @@ export default function App() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.text}>dWas, ein kleines Spiel zum Üben der deutschen bestimmten Artikel.</Text>
+      <Text style={styles.text}>
+        dWas, ein kleines Spiel zum Üben der deutschen bestimmten Artikel.
+      </Text>
       <StatusBar style="auto" />
       <ArticleBtns />
       <View style={styles.progressContainer}>

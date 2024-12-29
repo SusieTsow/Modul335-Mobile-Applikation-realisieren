@@ -1,24 +1,32 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, SafeAreaView, Button, View } from 'react-native';
-import { useFonts } from 'expo-font';
+import React, { useState, useCallback } from 'react';
+import { StyleSheet, Text, SafeAreaView, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import { useFonts } from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
 
-import theme from './constants/theme';
-import ArticleBtns from './components/block/ArticleBtns';
-import Btn from './components/atom/Btn';
-import PrgrsBar from './components/atom/PrgrsBar';
+import theme from '../constants/theme';
+import ArticleBtns from '../components/block/ArticleBtns';
+import Btn from '../components/atom/Btn';
+import PrgrsBar from '../components/atom/PrgrsBar';
+
+SplashScreen.preventAutoHideAsync();
 
 export default function App() {
-  // Load fonts
   const [fontsLoaded] = useFonts({
-    Nunito: require('./assets/fonts/Nunito-VariableFont_wght.ttf'),
+    Nunito: require('../assets/fonts/Nunito-VariableFont_wght.ttf'),
   });
+
+  const onLayoutRootView = useCallback(async () => {
+    if (fontsLoaded) {
+      await SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
 
   const [progress, setProgress] = useState(0); // Example progress value
   const [currentStep, setCurrentStep] = useState(0); // Current step value
 
   if (!fontsLoaded) {
-    return <Text>Loading fonts...</Text>;
+    return null;
   }
 
   const increaseProgress = () => {
@@ -30,7 +38,7 @@ export default function App() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} onLayout={onLayoutRootView}>
       <Text style={styles.text}>
         dWas, ein kleines Spiel zum Üben der deutschen bestimmten Artikel.
       </Text>

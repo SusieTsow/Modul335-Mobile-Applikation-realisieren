@@ -50,12 +50,13 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   primary: {
-    width: '80%',
+    width: 320,
     height: 50,
     backgroundColor: theme.colors.honey_500,
   },
   primaryText: {
     color: theme.colors.squirrel, // Set the desired text color for primary button
+    textTransform: 'uppercase',
   },
   der: {
     backgroundColor: theme.colors.damselfly_500,

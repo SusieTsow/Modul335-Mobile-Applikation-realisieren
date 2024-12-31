@@ -14,6 +14,17 @@ const LevelItem = ({
   progress,
   onPress,
 }) => {
+  const [progress, setProgress] = useState(0); // Example progress value
+  const [currentStep, setCurrentStep] = useState(0); // Current step value
+
+  const increaseProgress = () => {
+    const newStep = currentStep + 1;
+    if (newStep <= 20) {
+      setCurrentStep(newStep);
+      setProgress(newStep / 20);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Image source={shields[level]} style={styles.shield} />

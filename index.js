@@ -13,16 +13,7 @@ const AppWrapper = () => {
       <Stack.Navigator
         initialRouteName="Welcome"
         screenOptions={{
-          headerStyle: {
-            backgroundColor: '#ECE1D8',
-            shadowColor: '#e4d5c8',
-            shadowOffset: { width: 0, height: 4 },
-            shadowOpacity: 1,
-            shadowRadius: 0,
-            elevation: 5,
-          },
-          headerTintColor: '#863758',
-          headerTitleStyle: { fontWeight: 'bold', fontFamily: 'Nunito' },
+          headerShown: false,
         }}
       >
         <Stack.Screen name="Welcome" component={App} />

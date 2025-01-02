@@ -17,11 +17,12 @@ import {
 import { StatusBar } from 'expo-status-bar';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
-import { useNavigation } from '@react-navigation/native'; // Import useNavigation from React Navigation
+import { useNavigation } from '@react-navigation/native';
 
 import theme from '../constants/theme';
 import Btn from '../components/atom/Btn';
 
+// Prevent splash screen from auto-hiding until fonts are loaded
 SplashScreen.preventAutoHideAsync();
 
 const App = () => {

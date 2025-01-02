@@ -16,7 +16,7 @@ const PrgrsBar = ({ progress, style, totalSteps = 20 }) => {
 };
 
 PrgrsBar.propTypes = {
-  progress: PropTypes.number.isRequired, // Value between 0 and 1
+  progress: PropTypes.number.isRequired,
   style: PropTypes.object,
   totalSteps: PropTypes.number,
 };

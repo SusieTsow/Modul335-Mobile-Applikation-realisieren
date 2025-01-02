@@ -1,8 +1,6 @@
 import React from 'react';
-import { TouchableOpacity, View, StyleSheet, Image } from 'react-native';
+import { TouchableOpacity, View, StyleSheet, Image, Text } from 'react-native';
 import PropTypes from 'prop-types';
-
-import shields from '../../assets';
 import PrgrsBar from '../atom/PrgrsBar';
 import theme from '../../constants/theme';
 
@@ -57,9 +55,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: 10,
-    backgroundColor: theme.colors.oat_200,
-    borderRadius: 10,
-    marginVertical: 5,
   },
   shield: {
     width: 50,
@@ -70,12 +65,16 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   title: {
-    fontSize: 18,
-    fontWeight: 'bold',
+    fontFamily: 'Nunito',
+    fontSize: theme.font.fontSizes.default,
+    fontWeight: theme.font.fontWeight.bold,
     color: theme.colors.squirrel,
+    marginBottom: 5,
   },
   progressBar: {
-    marginTop: 5,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: theme.colors.oat_300,
   },
 });
 

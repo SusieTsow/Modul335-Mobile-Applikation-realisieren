@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { SafeAreaView, StyleSheet, ScrollView, View, Text } from 'react-native';
 import { getAuth, signOut } from 'firebase/auth';
 import { useNavigation } from '@react-navigation/native';
-import { getDatabase, ref, get, set } from 'firebase/database';
+import { ref, get, set } from 'firebase/database';
+import { database } from '../firebaseConfig';
 
 import Btn from '../components/atom/Btn';
 import LevelItem from '../components/block/LevelItem';
@@ -20,11 +21,12 @@ const Levels = () => {
   const navigation = useNavigation();
   const auth = getAuth();
   const [levelsData, setLevelsData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const handleLogout = async () => {
     try {
       await signOut(auth);
-      navigation.replace('Welcome'); // Redirect to Login screen
+      navigation.replace('Welcome');
     } catch (error) {
       console.error('Logout error:', error.message);
     }
@@ -32,40 +34,69 @@ const Levels = () => {
 
   useEffect(() => {
     const fetchProgress = async () => {
-      const db = getDatabase();
-      const levels = [];
-      for (let level = 1; level <= 5; level++) {
-        const progressRef = ref(db, `progress/level${level}`);
-        const snapshot = await get(progressRef);
-        if (snapshot.exists()) {
-          const data = snapshot.val();
+      try {
+        const userId = auth.currentUser?.uid;
+        if (!userId) {
+          setLoading(false);
+          return;
+        }
+
+        const levels = [];
+        for (let level = 1; level <= 5; level++) {
+          const progressRef = ref(
+            database,
+            `users/${userId}/progress/level${level}`
+          );
+          const snapshot = await get(progressRef);
+
+          if (!snapshot.exists()) {
+            await set(progressRef, {
+              progress: 0,
+              currentStep: 0,
+              isActive: level === 1,
+            });
+          }
+
+          const data = snapshot.exists()
+            ? snapshot.val()
+            : {
+                progress: 0,
+                currentStep: 0,
+                isActive: level === 1,
+              };
+
           levels.push({
             level,
             title: titles[level],
             progress: data.progress,
             isActive: data.isActive,
           });
-        } else {
-          levels.push({
-            level,
-            title: titles[level],
-            progress: 0,
-            isActive: false,
-          });
         }
+
+        setLevelsData(levels);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching progress:', error.message);
+        setLoading(false);
       }
-      setLevelsData(levels);
     };
+
     fetchProgress();
   }, []);
 
   const handleLevelPress = async (level) => {
-    const db = getDatabase();
-    const progressRef = ref(db, `progress/level${level}`);
-    const snapshot = await get(progressRef);
-    if (snapshot.exists()) {
+    try {
+      const userId = auth.currentUser?.uid;
+      if (!userId) return;
+
+      const progressRef = ref(
+        database,
+        `users/${userId}/progress/level${level}`
+      );
+      const snapshot = await get(progressRef);
       const data = snapshot.val();
-      const newStep = data.currentStep + 1;
+      const newStep = (data?.currentStep || 0) + 1;
+
       if (newStep <= 20) {
         const newProgress = newStep / 20;
         await set(progressRef, {
@@ -73,6 +104,7 @@ const Levels = () => {
           currentStep: newStep,
           isActive: true,
         });
+
         setLevelsData((prevLevels) =>
           prevLevels.map((item) =>
             item.level === level
@@ -81,23 +113,31 @@ const Levels = () => {
           )
         );
       }
+    } catch (error) {
+      console.error('Error updating progress:', error.message);
     }
   };
 
   return (
-    <ScrollView style={styles.container}>
-      {levelsData.map((item) => (
-        <LevelItem
-          key={item.level}
-          level={item.level}
-          title={item.title}
-          progress={item.progress}
-          isActive={item.isActive}
-          onPress={() => handleLevelPress(item.level)}
-        />
-      ))}
-      <Btn title="Logout" onPress={handleLogout} />
-    </ScrollView>
+    <SafeAreaView style={styles.container}>
+      <ScrollView contentContainerStyle={styles.scrollView}>
+        {loading ? (
+          <Text>Loading...</Text>
+        ) : (
+          levelsData.map((item) => (
+            <LevelItem
+              key={item.level}
+              level={item.level}
+              title={item.title}
+              progress={item.progress}
+              isActive={item.isActive}
+              onPress={() => handleLevelPress(item.level)}
+            />
+          ))
+        )}
+        <Btn title="Logout" onPress={handleLogout} />
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
@@ -105,6 +145,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: theme.colors.backgroundColor,
+  },
+  scrollView: {
+    padding: 20,
   },
 });
 

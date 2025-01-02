@@ -1,4 +1,4 @@
-import { initializeApp } from 'firebase/app';
+import { initializeApp, getApps, getApp } from 'firebase/app';
 import {
   getAuth,
   signInWithEmailAndPassword,
@@ -16,7 +16,9 @@ import {
   FIREBASE_STORAGE_BUCKET,
   FIREBASE_APP_ID,
 } from '@env';
+import { getDatabase } from 'firebase/database';
 
+// Firebase Configuration
 const firebaseConfig = {
   apiKey: FIREBASE_API_KEY,
   authDomain: FIREBASE_AUTH_DOMAIN,
@@ -26,18 +28,26 @@ const firebaseConfig = {
   appId: FIREBASE_APP_ID,
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
+// Ensure Firebase App is initialized only once
+const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 
-// Initialize Firebase Auth with persistence using AsyncStorage
-const auth = initializeAuth(app, {
-  persistence: getReactNativePersistence(AsyncStorage),
-});
+// Ensure Auth is initialized only once with persistence
+const auth = !getApps().length
+  ? initializeAuth(app, {
+      persistence: getReactNativePersistence(AsyncStorage),
+    })
+  : getAuth(app);
 
+// Get Firebase Database
+const database = getDatabase(app);
+
+// Log initialization success
 console.log('Firebase initialized successfully');
 
+// Export necessary modules
 export {
   auth,
+  database,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   onAuthStateChanged,

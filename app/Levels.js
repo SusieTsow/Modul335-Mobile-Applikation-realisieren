@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { SafeAreaView, StyleSheet, ScrollView, View, Text } from 'react-native';
 import { getAuth, signOut } from 'firebase/auth';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { ref, get, set } from 'firebase/database';
 import { database } from '../firebaseConfig';
 
@@ -32,90 +32,66 @@ const Levels = () => {
     }
   };
 
-  useEffect(() => {
-    const fetchProgress = async () => {
-      try {
-        const userId = auth.currentUser?.uid;
-        if (!userId) {
-          setLoading(false);
-          return;
-        }
+  const fetchProgress = async () => {
+    try {
+      const userId = auth.currentUser?.uid;
+      if (!userId) {
+        setLoading(false);
+        return;
+      }
 
-        const levels = [];
-        for (let level = 1; level <= 5; level++) {
-          const progressRef = ref(
-            database,
-            `users/${userId}/progress/level${level}`
-          );
-          const snapshot = await get(progressRef);
+      const levels = [];
+      for (let level = 1; level <= 5; level++) {
+        const progressRef = ref(
+          database,
+          `users/${userId}/progress/level${level}`
+        );
+        const snapshot = await get(progressRef);
 
-          if (!snapshot.exists()) {
-            await set(progressRef, {
-              progress: 0,
-              currentStep: 0,
-              isActive: level === 1,
-            });
-          }
-
-          const data = snapshot.exists()
-            ? snapshot.val()
-            : {
-                progress: 0,
-                currentStep: 0,
-                isActive: level === 1,
-              };
-
-          levels.push({
-            level,
-            title: titles[level],
-            progress: data.progress,
-            isActive: data.isActive,
+        if (!snapshot.exists()) {
+          await set(progressRef, {
+            progress: 0,
+            currentStep: 0,
+            isActive: level === 1,
           });
         }
 
-        setLevelsData(levels);
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching progress:', error.message);
-        setLoading(false);
-      }
-    };
+        const data = snapshot.exists()
+          ? snapshot.val()
+          : {
+              progress: 0,
+              currentStep: 0,
+              isActive: level === 1,
+            };
 
+        levels.push({
+          level,
+          title: titles[level],
+          progress: data.progress,
+          isActive: data.isActive,
+        });
+      }
+
+      setLevelsData(levels);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching progress:', error.message);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchProgress();
   }, []);
 
-  const handleLevelPress = async (level) => {
-    try {
-      const userId = auth.currentUser?.uid;
-      if (!userId) return;
+  useFocusEffect(
+    useCallback(() => {
+      fetchProgress();
+    }, [])
+  );
 
-      const progressRef = ref(
-        database,
-        `users/${userId}/progress/level${level}`
-      );
-      const snapshot = await get(progressRef);
-      const data = snapshot.val();
-      const newStep = (data?.currentStep || 0) + 1;
-
-      if (newStep <= 20) {
-        const newProgress = newStep / 20;
-        await set(progressRef, {
-          progress: newProgress,
-          currentStep: newStep,
-          isActive: true,
-        });
-
-        setLevelsData((prevLevels) =>
-          prevLevels.map((item) =>
-            item.level === level
-              ? { ...item, progress: newProgress, isActive: true }
-              : item
-          )
-        );
-      }
-    } catch (error) {
-      console.error('Error updating progress:', error.message);
-    }
+  const handleLevelPress = (level) => {
+    navigation.navigate('Challenge', { level });
   };
 
   return (

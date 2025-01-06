@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { SafeAreaView, StyleSheet, ScrollView, View, Text } from 'react-native';
 import { getAuth, signOut } from 'firebase/auth';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
-import { ref, get, set } from 'firebase/database';
+import { ref, get, set, getDatabase, update, onValue } from 'firebase/database';
 import { database } from '../firebaseConfig';
 
 import Btn from '../components/atom/Btn';
@@ -40,29 +40,29 @@ const Levels = () => {
         return;
       }
 
+      // Get all progress data at once instead of separate requests
+      const progressRef = ref(database, `users/${userId}/progress`);
+      const snapshot = await get(progressRef);
+      const progressData = snapshot.val() || {};
+
       const levels = [];
       for (let level = 1; level <= 5; level++) {
-        const progressRef = ref(
-          database,
-          `users/${userId}/progress/level${level}`
-        );
-        const snapshot = await get(progressRef);
+        const levelKey = `level${level}`;
+        const defaultData = {
+          progress: 0,
+          currentStep: 0,
+          isActive: level === 1,
+        };
 
-        if (!snapshot.exists()) {
-          await set(progressRef, {
-            progress: 0,
-            currentStep: 0,
-            isActive: level === 1,
-          });
+        // If data doesn't exist, create it
+        if (!progressData[levelKey]) {
+          await set(
+            ref(database, `users/${userId}/progress/${levelKey}`),
+            defaultData
+          );
         }
 
-        const data = snapshot.exists()
-          ? snapshot.val()
-          : {
-              progress: 0,
-              currentStep: 0,
-              isActive: level === 1,
-            };
+        const data = progressData[levelKey] || defaultData;
 
         levels.push({
           level,
@@ -81,7 +81,34 @@ const Levels = () => {
   };
 
   useEffect(() => {
-    fetchProgress();
+    const userId = auth.currentUser?.uid;
+    if (!userId) return;
+
+    const progressRef = ref(database, `users/${userId}/progress`);
+    const unsubscribe = onValue(progressRef, (snapshot) => {
+      const progressData = snapshot.val() || {};
+
+      const levels = [];
+      for (let level = 1; level <= 5; level++) {
+        const levelKey = `level${level}`;
+        const data = progressData[levelKey] || {
+          progress: 0,
+          currentStep: 0,
+          isActive: level === 1,
+        };
+
+        levels.push({
+          level,
+          title: titles[level],
+          progress: data.progress,
+          isActive: data.isActive,
+        });
+      }
+
+      setLevelsData(levels);
+    });
+
+    return () => unsubscribe();
   }, []);
 
   useFocusEffect(

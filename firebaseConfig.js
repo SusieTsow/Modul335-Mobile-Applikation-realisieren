@@ -52,4 +52,5 @@ export {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
 };
+
 export default app;

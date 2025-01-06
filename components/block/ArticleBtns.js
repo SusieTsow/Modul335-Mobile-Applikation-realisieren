@@ -1,24 +1,48 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
+import PropTypes from 'prop-types';
 import Btn from '../atom/Btn';
+import theme from '../../constants/theme';
 
-const ArticleBtns = () => {
+const ArticleBtns = ({ onPress, disabledButtons }) => {
+  const articles = [
+    { type: 'der', color: theme.colors.damselfly_500 },
+    { type: 'die', color: theme.colors.tomato_500 },
+    { type: 'das', color: theme.colors.mint_500 },
+  ];
+
   return (
     <View style={styles.container}>
-      <Btn title="Der" type="der" onPress={() => console.log('Der')} />
-      <Btn title="Die" type="die" onPress={() => console.log('Die')} />
-      <Btn title="Das" type="das" onPress={() => console.log('Das')} />
+      {articles.map((article) => (
+        <View key={article.type} style={styles.buttonWrapper}>
+          <Btn
+            title={article.type}
+            type={article.type}
+            onPress={() => onPress(article.type)}
+            disabled={disabledButtons.includes(article.type)}
+          />
+        </View>
+      ))}
     </View>
   );
+};
+
+ArticleBtns.propTypes = {
+  onPress: PropTypes.func.isRequired,
+  disabledButtons: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    gap: 30,
+    justifyContent: 'space-between',
     alignItems: 'center',
-    marginVertical: 20,
+    paddingHorizontal: 20,
+    marginTop: 20,
+  },
+  buttonWrapper: {
+    flex: 1,
+    paddingHorizontal: 5,
   },
 });
 

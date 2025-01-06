@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
   SafeAreaView,
-  View,
   Text,
   StyleSheet,
   TextInput,
@@ -9,7 +8,8 @@ import {
   Button,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { getDatabase, ref, set } from 'firebase/database';
+import { getDatabase, ref, set, update } from 'firebase/database';
+import { getAuth } from 'firebase/auth';
 import PrgrsBar from '../components/atom/PrgrsBar';
 import ArticleBtns from '../components/block/ArticleBtns';
 import theme from '../constants/theme';
@@ -26,6 +26,7 @@ const Challenge = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const { level } = route.params;
+  const auth = getAuth();
   const [quizData, setQuizData] = useState([]);
   const [currentQuizIndex, setCurrentQuizIndex] = useState(0);
   const [progress, setProgress] = useState(0);
@@ -58,8 +59,9 @@ const Challenge = () => {
 
   const handleAnswer = (selectedArticle) => {
     setInputValue(selectedArticle);
-    const currentQuiz = quizData[currentQuizIndex];
-    if (selectedArticle === currentQuiz.artikel) {
+    const currentQuizItem = quizData[currentQuizIndex];
+
+    if (selectedArticle === currentQuizItem.artikel) {
       const newProgress = (currentQuizIndex + 1) / 20;
       setProgress(newProgress);
       setCurrentQuizIndex(currentQuizIndex + 1);
@@ -68,8 +70,29 @@ const Challenge = () => {
 
       if (currentQuizIndex + 1 === 20) {
         const db = getDatabase();
-        const progressRef = ref(db, `progress/level${level}`);
-        set(progressRef, { progress: 1, currentStep: 20, isActive: true });
+        const userId = auth.currentUser.uid;
+
+        // Update progress and activate next level
+        const updates = {};
+        updates[`users/${userId}/progress/level${level}`] = {
+          progress: 1,
+          currentStep: 20,
+          isActive: true,
+        };
+
+        // If not the last level, activate the next one
+        if (level < 5) {
+          updates[`users/${userId}/progress/level${level + 1}`] = {
+            progress: 0,
+            currentStep: 0,
+            isActive: true,
+          };
+        }
+
+        // Update multiple paths atomically
+        update(ref(db), updates);
+
+        // Navigate to congrats page regardless of level
         navigation.replace('Congrats', { level });
       }
     } else {
@@ -96,16 +119,7 @@ const Challenge = () => {
         editable={false}
       />
       <Text style={styles.sentence}>{currentQuiz.satz}</Text>
-      <View style={styles.buttonContainer}>
-        {['der', 'die', 'das'].map((article) => (
-          <Button
-            key={article}
-            title={article}
-            onPress={() => handleAnswer(article)}
-            disabled={disabledButtons.includes(article)}
-          />
-        ))}
-      </View>
+      <ArticleBtns onPress={handleAnswer} disabledButtons={disabledButtons} />
     </SafeAreaView>
   );
 };
@@ -132,10 +146,6 @@ const styles = StyleSheet.create({
     fontWeight: theme.font.fontWeight.bold,
     color: theme.colors.squirrel,
     marginBottom: 20,
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
   },
 });
 

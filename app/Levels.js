@@ -122,7 +122,7 @@ const Levels = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.scrollView}>
         {loading ? (
           <Text>Loading...</Text>
@@ -138,19 +138,27 @@ const Levels = () => {
             />
           ))
         )}
-        <Btn title="Logout" onPress={handleLogout} />
+        <View style={styles.btn}>
+          <Btn title="Abmelden" onPress={handleLogout} type="textBtn" />
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  safeArea: {
     flex: 1,
     backgroundColor: theme.colors.backgroundColor,
   },
   scrollView: {
+    flexGrow: 1,
     padding: 20,
+    backgroundColor: theme.colors.backgroundColor,
+    marginTop: 20,
+  },
+  btn: {
+    alignItems: 'center',
   },
 });
 

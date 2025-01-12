@@ -1,19 +1,20 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { TouchableOpacity, Text, StyleSheet } from 'react-native';
+import PropTypes from 'prop-types';
 import theme from '../../constants/theme';
 
-const Btn = ({ title, type = 'primary', disabled = false, onPress }) => {
+const Btn = ({ title, onPress, type, disabled }) => {
   const btnStyle = [
     styles.btn,
-    styles[type], // Dynamically add style based on type
-    disabled && styles.disabledBtn, // Disable button if disable is true
+    styles[type],
+    disabled && styles.disabledBtn,
+    type === 'textButton' && styles.textBtn, // Apply textBtn style
   ];
-
   const btnTextStyle = [
     styles.btnText,
-    styles[`${type}Text`], // Dynamically add text style based on type
-    disabled && styles.disabledBtnText, // Change text color if disabled
+    styles[`${type}Text`],
+    disabled && styles.disabledBtnText,
+    type === 'textButton' && styles.textBtnText, // Apply textBtnText style
   ];
 
   return (
@@ -29,15 +30,20 @@ const Btn = ({ title, type = 'primary', disabled = false, onPress }) => {
 
 Btn.propTypes = {
   title: PropTypes.string.isRequired,
-  type: PropTypes.oneOf(['primary', 'der', 'die', 'das']),
+  type: PropTypes.oneOf(['primary', 'der', 'die', 'das', 'textBtn']),
   disabled: PropTypes.bool,
   onPress: PropTypes.func.isRequired,
 };
 
+Btn.defaultProps = {
+  type: 'primary',
+  disabled: false,
+};
+
 const styles = StyleSheet.create({
   btn: {
-    width: 70,
-    height: 40,
+    width: 80,
+    height: 44,
     alignItems: 'center',
     justifyContent: 'center',
     borderColor: theme.btnBorder.default.borderColor,
@@ -61,11 +67,23 @@ const styles = StyleSheet.create({
   der: {
     backgroundColor: theme.colors.damselfly_500,
   },
+  derText: {
+    fontSize: theme.font.fontSizes.quiz,
+    textTransform: 'capitalize',
+  },
   die: {
     backgroundColor: theme.colors.tomato_500,
   },
+  dieText: {
+    fontSize: theme.font.fontSizes.quiz,
+    textTransform: 'capitalize',
+  },
   das: {
     backgroundColor: theme.colors.mint_500,
+  },
+  dasText: {
+    fontSize: theme.font.fontSizes.quiz,
+    textTransform: 'capitalize',
   },
   disabledBtn: {
     backgroundColor: theme.colors.oat_300,
@@ -83,6 +101,20 @@ const styles = StyleSheet.create({
   },
   disabledBtnText: {
     color: theme.colors.oat_400,
+  },
+  textBtn: {
+    width: 320,
+    height: 50,
+    backgroundColor: 'transparent',
+    borderWidth: 0,
+    shadowColor: 'transparent',
+  },
+  textBtnText: {
+    color: theme.colors.oat_500,
+    fontFamily: theme.font.fontFamily,
+    fontSize: theme.font.fontSizes.default,
+    fontWeight: theme.font.fontWeight.bold,
+    textTransform: 'uppercase',
   },
 });
 

@@ -6,17 +6,22 @@ import theme from '../../constants/theme';
 
 const ArticleBtns = ({ onPress, disabledButtons }) => {
   const articles = [
-    { type: 'der', color: theme.colors.damselfly_500 },
-    { type: 'die', color: theme.colors.tomato_500 },
-    { type: 'das', color: theme.colors.mint_500 },
+    { type: 'der', title: 'Der' },
+    { type: 'die', title: 'Die' },
+    { type: 'das', title: 'Das' },
   ];
 
   return (
     <View style={styles.container}>
       {articles.map((article) => (
-        <View key={article.type} style={styles.buttonWrapper}>
+        <View
+          key={article.type}
+          style={[
+            article.type === 'die' && styles.differentMargin, // Apply different margin for 'die'
+          ]}
+        >
           <Btn
-            title={article.type}
+            title={article.title}
             type={article.type}
             onPress={() => onPress(article.type)}
             disabled={disabledButtons.includes(article.type)}
@@ -34,15 +39,17 @@ ArticleBtns.propTypes = {
 
 const styles = StyleSheet.create({
   container: {
+    width: 'auto',
+    height: 200,
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 20,
     marginTop: 20,
+    gap: 30,
   },
-  buttonWrapper: {
-    flex: 1,
-    paddingHorizontal: 5,
+  differentMargin: {
+    marginBottom: 100, // Different margin for specific button
   },
 });
 

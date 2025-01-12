@@ -7,9 +7,11 @@ export default {
     oat_200: '#ece2d9',
     oat_300: '#e4d5c8',
     oat_400: '#d3bba6',
+    oat_500: '#c2a084',
 
     honey_500: '#fec35d',
     honey_600: '#feb02a',
+
     squirrel: '#863758',
 
     damselfly_100: '#e0edf5',
@@ -31,7 +33,8 @@ export default {
     fontSizes: {
       default: 16,
       title: 24,
-      small: 12,
+      quiz: 20,
+      small: 14,
     },
 
     fontWeight: {

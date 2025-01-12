@@ -1,12 +1,16 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import {
-  StyleSheet,
-  Text,
   SafeAreaView,
   View,
+  Text,
   TextInput,
-  Alert,
+  StyleSheet,
   Image,
+  KeyboardAvoidingView,
+  Platform,
+  TouchableWithoutFeedback,
+  Keyboard,
+  Alert,
 } from 'react-native';
 import {
   auth,
@@ -22,42 +26,73 @@ import { useNavigation } from '@react-navigation/native';
 import theme from '../constants/theme';
 import Btn from '../components/atom/Btn';
 
-// Prevent splash screen from auto-hiding until fonts are loaded
+// Prevent the splash screen from auto-hiding
 SplashScreen.preventAutoHideAsync();
 
 const App = () => {
-  const [fontsLoaded] = useFonts({
+  const [fontsLoaded, fontError] = useFonts({
     Nunito: require('../assets/fonts/Nunito-VariableFont_wght.ttf'),
   });
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLogin, setIsLogin] = useState(true);
-  const [user, setUser] = useState(null); // Track the logged-in user
+  const [initializing, setInitializing] = useState(true);
+  const [appIsReady, setAppIsReady] = useState(false);
 
   const navigation = useNavigation();
 
-  // Firebase Authentication State Listener
+  // Check if the user is already signed in
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      if (currentUser) {
-        setUser(currentUser); // Set user on authentication state change
-        navigation.replace('Levels'); // Redirect to Levels screen if logged in
-      } else {
-        setUser(null); // Reset user if not logged in
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user && initializing) {
+        // User is signed in
+        navigation.replace('Levels');
+      }
+      if (initializing) {
+        setInitializing(false);
       }
     });
 
-    // Cleanup on unmount
     return unsubscribe;
-  }, [auth, navigation]);
+  }, [navigation, initializing]);
 
-  // Prevent splash screen from auto-hiding until fonts are loaded
-  const onLayoutRootView = useCallback(async () => {
-    if (fontsLoaded) {
-      await SplashScreen.hideAsync();
+  // Hide the splash screen when the app is ready
+  useEffect(() => {
+    async function prepare() {
+      try {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+      } catch (e) {
+        console.warn(e);
+      } finally {
+        setAppIsReady(true);
+      }
     }
-  }, [fontsLoaded]);
+
+    prepare();
+  }, []);
+
+  // Show an alert if there was an error loading the fonts
+  useEffect(() => {
+    if (fontError) {
+      console.error('Font loading error:', fontError);
+      Alert.alert(
+        'Error',
+        'Failed to load fonts. The app may not display correctly.'
+      );
+    }
+  }, [fontError]);
+
+  // Hide the splash screen when the app is ready
+  const onLayoutRootView = useCallback(async () => {
+    if (appIsReady && fontsLoaded) {
+      try {
+        await SplashScreen.hideAsync();
+      } catch (e) {
+        console.warn('Error hiding splash screen:', e);
+      }
+    }
+  }, [appIsReady, fontsLoaded]);
 
   const handleAuth = () => {
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
@@ -66,78 +101,97 @@ const App = () => {
       return;
     }
 
+    // Check if the password is at least 6 characters long
     if (isLogin) {
-      // Login Logic
       signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
           const user = userCredential.user;
           Alert.alert('Success', `Welcome back ${user.email}`);
-          navigation.replace('Levels'); // Navigate to Levels after login
+          navigation.replace('Levels');
         })
         .catch((error) => {
-          const errorMessage = error.message;
-          Alert.alert('Error', errorMessage);
+          Alert.alert('Error', error.message);
         });
     } else {
-      // Sign Up Logic
       createUserWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
           const user = userCredential.user;
           Alert.alert('Success', `Account created for ${user.email}`);
-          navigation.replace('Levels'); // Navigate to Levels after sign-up
+          navigation.replace('Levels');
         })
         .catch((error) => {
-          const errorMessage = error.message;
-          Alert.alert('Error', errorMessage);
+          Alert.alert('Error', error.message);
         });
     }
   };
 
-  // If fonts are not loaded, prevent the app from rendering
-  if (!fontsLoaded) {
+  // If the app is not ready, return null
+  if (!appIsReady || !fontsLoaded || initializing) {
+    return null;
+  }
+
+  if (auth.currentUser) {
+    navigation.replace('Levels');
     return null;
   }
 
   return (
     <SafeAreaView style={styles.container} onLayout={onLayoutRootView}>
-      <StatusBar style="auto" />
-      <View>
-        <Image
-          source={require('../assets/icons/logo.png')}
-          style={styles.image}
-        />
-        <Text style={styles.text}>
-          ein kleines Spiel zum Üben der deutschen bestimmten Artikel
-        </Text>
-      </View>
-      <View>
-        <TextInput
-          placeholder="Email"
-          style={styles.input}
-          placeholderTextColor={theme.colors.oat_300}
-          value={email}
-          onChangeText={setEmail}
-          autoCapitalize="none"
-        />
-        <TextInput
-          placeholder="Password"
-          style={styles.input}
-          placeholderTextColor={theme.colors.oat_300}
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-        />
-      </View>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.keyboardAvoidingView}
+      >
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View style={styles.inner}>
+            <StatusBar style="auto" />
+            <View style={styles.logoContainer}>
+              <Image
+                source={require('../assets/icons/logo.png')}
+                style={styles.image}
+              />
+              <Text style={styles.text}>
+                ein kleines Spiel zum Üben der deutschen bestimmten Artikel
+              </Text>
+            </View>
+            <View style={styles.form}>
+              <TextInput
+                placeholder="Email"
+                style={styles.input}
+                placeholderTextColor={theme.colors.oat_300}
+                value={email}
+                onChangeText={setEmail}
+                autoCapitalize="none"
+              />
+              <TextInput
+                placeholder="Passwort"
+                style={styles.input}
+                placeholderTextColor={theme.colors.oat_300}
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+              />
+            </View>
+            <View style={styles.btn}>
+              <Btn
+                title={isLogin ? 'Anmelden' : 'Registrieren'}
+                onPress={handleAuth}
+                type="primary"
+              />
+            </View>
 
-      <Btn title={isLogin ? 'Login' : 'Sign Up'} onPress={handleAuth} />
-
-      <View>
-        <Text style={styles.toggleText} onPress={() => setIsLogin(!isLogin)}>
-          {isLogin
-            ? 'Need an account? Sign Up'
-            : 'Already have an account? Login'}
-        </Text>
-      </View>
+            <View>
+              <Text
+                style={styles.toggleText}
+                onPress={() => setIsLogin(!isLogin)}
+              >
+                {isLogin
+                  ? 'Brauchst du ein Konto? Registriere dich'
+                  : 'Hast du schon ein Konto? Melde dich an'}
+              </Text>
+            </View>
+          </View>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
@@ -149,26 +203,34 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  logoContainer: {
+    marginBottom: 150,
+    alignItems: 'center', // Center the logo container
+  },
   image: {
     width: 150,
     height: 150,
-    marginHorizontal: 'auto',
-    marginBottom: 10,
+    marginBottom: 15,
   },
   text: {
     fontFamily: 'Nunito',
     fontSize: theme.font.fontSizes.default,
     fontWeight: theme.font.fontWeight.bold,
     color: theme.colors.squirrel,
+    textAlign: 'center',
     marginHorizontal: theme.marginHorizontal.default,
     marginBottom: 20,
+  },
+  form: {
+    marginBottom: 15,
+    alignItems: 'center',
   },
   input: {
     width: 320,
     height: 50,
     paddingHorizontal: 20,
     backgroundColor: theme.colors.oat_100,
-    marginVertical: 10,
+    marginVertical: 5,
     borderWidth: 2,
     borderColor: theme.colors.oat_300,
     borderRadius: 50,
@@ -177,12 +239,16 @@ const styles = StyleSheet.create({
     fontWeight: theme.font.fontWeight.bold,
     color: theme.colors.squirrel,
   },
+  btn: {
+    alignItems: 'center',
+  },
   toggleText: {
     fontFamily: 'Nunito',
     fontSize: theme.font.fontSizes.default,
     fontWeight: theme.font.fontWeight.default,
     color: theme.colors.squirrel,
-    marginTop: 20,
+    marginTop: 5,
+    textAlign: 'center',
   },
 });
 

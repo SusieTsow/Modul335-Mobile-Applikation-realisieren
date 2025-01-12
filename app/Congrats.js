@@ -20,8 +20,8 @@ const Congrats = () => {
   return (
     <View style={styles.container}>
       <Image source={shields[level]} style={styles.image} />
-      <Text style={styles.title}>Congratulations!</Text>
-      <Text style={styles.subtitle}>You have completed all levels!</Text>
+      <Text style={styles.title}>Herzlichen{'\n'}Glückwunsch!</Text>
+      <Text style={styles.subtitle}>Du hast dieses Level abgeschlossen!</Text>
       <Btn title="weiter" onPress={() => navigation.replace('Welcome')} />
     </View>
   );
@@ -36,8 +36,9 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   image: {
-    width: 200,
-    height: 200,
+    width: 150,
+    height: 150,
+    resizeMode: 'contain',
     marginBottom: 20,
   },
   title: {
@@ -46,13 +47,15 @@ const styles = StyleSheet.create({
     fontWeight: theme.font.fontWeight.bold,
     color: theme.colors.squirrel,
     marginBottom: 10,
+    textAlign: 'center',
   },
   subtitle: {
     fontFamily: 'Nunito',
     fontSize: theme.font.fontSizes.default,
-    fontWeight: theme.font.fontWeight.bold,
+    fontWeight: theme.font.fontWeight.default,
     color: theme.colors.squirrel,
     marginBottom: 20,
+    textAlign: 'center',
   },
 });
 

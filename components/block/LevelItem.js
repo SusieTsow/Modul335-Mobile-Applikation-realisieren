@@ -3,6 +3,7 @@ import { TouchableOpacity, View, StyleSheet, Image, Text } from 'react-native';
 import PropTypes from 'prop-types';
 import PrgrsBar from '../atom/PrgrsBar';
 import theme from '../../constants/theme';
+import { AuthErrorCodes } from 'firebase/auth';
 
 const shields = {
   1: {
@@ -55,18 +56,22 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: 10,
+    marginBottom: 10,
   },
   shield: {
-    width: 50,
-    height: 50,
+    width: 100,
+    height: 100,
+    resizeMode: 'contain',
     marginRight: 10,
   },
   info: {
     flex: 1,
+    gap: 5,
+    marginBottom: 15,
   },
   title: {
     fontFamily: 'Nunito',
-    fontSize: theme.font.fontSizes.default,
+    fontSize: theme.font.fontSizes.quiz,
     fontWeight: theme.font.fontWeight.bold,
     color: theme.colors.squirrel,
     marginBottom: 5,

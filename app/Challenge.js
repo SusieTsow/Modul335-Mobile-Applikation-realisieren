@@ -5,7 +5,9 @@ import {
   StyleSheet,
   TextInput,
   Alert,
-  Button,
+  TouchableOpacity,
+  Image,
+  View,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { getDatabase, ref, set, update } from 'firebase/database';
@@ -32,6 +34,7 @@ const Challenge = () => {
   const [progress, setProgress] = useState(0);
   const [inputValue, setInputValue] = useState('');
   const [disabledButtons, setDisabledButtons] = useState([]);
+  const [currentStep, setCurrentStep] = useState(0); // Initialize currentStep state
 
   useEffect(() => {
     const loadQuizData = () => {
@@ -39,7 +42,7 @@ const Challenge = () => {
         const data = levelData[level];
         setQuizData(data);
       } catch (error) {
-        console.error('Error loading quiz data:', error.message);
+        console.error('Fehler beim Laden der Quizdaten:', error.message);
       }
     };
 
@@ -48,11 +51,11 @@ const Challenge = () => {
 
   const handleCancel = () => {
     Alert.alert(
-      'Cancel Challenge',
-      'Are you sure you want to stop the challenge and go back?',
+      'Herausforderung abbrechen',
+      'Bist du sicher, dass du die Herausforderung beenden und zurückgehen möchtest?',
       [
-        { text: 'No', style: 'cancel' },
-        { text: 'Yes', onPress: () => navigation.replace('Levels') },
+        { text: 'Nein', style: 'cancel' },
+        { text: 'Ja', onPress: () => navigation.replace('Levels') },
       ]
     );
   };
@@ -65,6 +68,7 @@ const Challenge = () => {
       const newProgress = (currentQuizIndex + 1) / 20;
       setProgress(newProgress);
       setCurrentQuizIndex(currentQuizIndex + 1);
+      setCurrentStep(currentStep + 1); // Update currentStep state
       setInputValue('');
       setDisabledButtons([]);
 
@@ -92,12 +96,12 @@ const Challenge = () => {
         // Update multiple paths atomically
         update(ref(db), updates);
 
-        // Navigate to congrats page regardless of level
+        // Navigate to congrats page
         navigation.replace('Congrats', { level });
       }
     } else {
       setDisabledButtons((prev) => [...prev, selectedArticle]);
-      Alert.alert('Incorrect', 'The selected article is incorrect.');
+      Alert.alert('Falsch', 'Der gewählte Artikel ist falsch.');
     }
   };
 
@@ -109,17 +113,34 @@ const Challenge = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Button title="Cancel" onPress={handleCancel} />
-      <PrgrsBar progress={progress} style={styles.progressBar} />
-      <TextInput
-        placeholder="d'Was?"
-        value={inputValue}
-        onChangeText={setInputValue}
-        style={styles.input}
-        editable={false}
+      <View style={styles.toolbar}>
+        <TouchableOpacity onPress={handleCancel}>
+          <Image
+            source={require('../assets/symbols/cancel.png')}
+            style={styles.icon}
+          />
+        </TouchableOpacity>
+        <PrgrsBar progress={progress} style={styles.progressBar} />
+        <Text style={styles.stepText}>{currentStep}/20</Text>
+      </View>
+      <View style={styles.quiz}>
+        <Text style={styles.sentence}>
+          <TextInput
+            placeholder="d'Was?"
+            value={inputValue}
+            onChangeText={setInputValue}
+            style={styles.input}
+            editable={false}
+          />
+          {currentQuiz.satz}
+        </Text>
+      </View>
+
+      <ArticleBtns
+        onPress={handleAnswer}
+        disabledButtons={disabledButtons}
+        style={styles.artikelBtns}
       />
-      <Text style={styles.sentence}>{currentQuiz.satz}</Text>
-      <ArticleBtns onPress={handleAnswer} disabledButtons={disabledButtons} />
     </SafeAreaView>
   );
 };
@@ -128,24 +149,58 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: theme.colors.backgroundColor,
-    padding: 20,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  toolbar: {
+    height: 50,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    margin: 10,
+    gap: 15,
+  },
+  icon: {
+    width: 16,
+    height: 16,
   },
   progressBar: {
     marginVertical: 20,
+    width: 270,
   },
-  input: {
-    height: 40,
-    borderColor: theme.colors.oat_300,
-    borderWidth: 1,
-    marginBottom: 20,
-    paddingHorizontal: 10,
-  },
-  sentence: {
-    fontFamily: 'Nunito',
+  stepText: {
+    fontFamily: theme.font.fontFamily,
     fontSize: theme.font.fontSizes.default,
     fontWeight: theme.font.fontWeight.bold,
     color: theme.colors.squirrel,
-    marginBottom: 20,
+  },
+  quiz: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginHorizontal: 40,
+  },
+  sentence: {
+    fontFamily: theme.font.fontFamily,
+    fontSize: theme.font.fontSizes.quiz,
+    fontWeight: theme.font.fontWeight.bold,
+    color: theme.colors.squirrel,
+    lineHeight: 44,
+  },
+  input: {
+    width: 115,
+    height: 44,
+    paddingHorizontal: 20,
+    backgroundColor: theme.colors.oat_100,
+    marginRight: 10,
+
+    borderWidth: 2,
+    borderColor: theme.colors.oat_300,
+    borderRadius: 50,
+
+    fontFamily: theme.font.fontFamily,
+    fontSize: theme.font.fontSizes.quiz,
+    fontWeight: theme.font.fontWeight.bold,
+    color: theme.colors.squirrel,
   },
 });
 

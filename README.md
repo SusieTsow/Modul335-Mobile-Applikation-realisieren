@@ -1,5 +1,7 @@
 # UEK335 Abschlussprojekt
 
+Informatik EFZ Module an der Benedict Schule
+
 This project is a React Native application that provides various levels of challenges in different categories. Users can track their progress and navigate through different levels.
 
 ## Features

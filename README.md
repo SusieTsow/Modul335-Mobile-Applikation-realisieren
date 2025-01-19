@@ -6,10 +6,11 @@ This project is a React Native application that provides various levels of chall
 
 ## Features
 
-- User authentication with Firebase
-- Track progress for each level
-- Navigate through different challenge levels
-- Logout functionality
+- Implement user authentication with Firebase.
+- Use the Expo Sensor Gyroscope as an alternative input method.
+- Track progress for each challenge level.
+- Enable navigation through various challenge levels.
+- Add logout functionality.
 
 ## Installation
 

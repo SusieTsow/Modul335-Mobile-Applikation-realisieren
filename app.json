@@ -19,19 +19,27 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/icons/adaptive-icon.png",
         "backgroundColor": "#ECE1D8"
-      }
+      },
+      "package": "com.susie_tsow.dWas"
     },
     "web": {
       "favicon": "./assets/icons/favicon.png"
     },
     "plugins": [
-      ["expo-font"],
+      [
+        "expo-font"
+      ],
       [
         "expo-sensors",
         {
           "motionPermission": "Allow $(PRODUCT_NAME) to access your device motion"
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "311350f8-4885-4b67-924f-06ff72af251a"
+      }
+    }
   }
 }

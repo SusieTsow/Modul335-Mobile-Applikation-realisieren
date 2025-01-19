@@ -12,6 +12,7 @@ import {
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { getDatabase, ref, set, update } from 'firebase/database';
 import { getAuth } from 'firebase/auth';
+import { Gyroscope } from 'expo-sensors';
 import PrgrsBar from '../components/atom/PrgrsBar';
 import ArticleBtns from '../components/block/ArticleBtns';
 import theme from '../constants/theme';
@@ -35,6 +36,14 @@ const Challenge = () => {
   const [inputValue, setInputValue] = useState('');
   const [disabledButtons, setDisabledButtons] = useState([]);
   const [currentStep, setCurrentStep] = useState(0); // Initialize currentStep state
+  const [gyroscopeData, setGyroscopeData] = useState({});
+  const [subscription, setSubscription] = useState(null);
+  const [lastGestureTime, setLastGestureTime] = useState(0);
+
+  // Set the threshold for shake detection.
+  const THRESHOLD = 1.5;
+  // Set the cooldown time (milliseconds) for gesture triggering.
+  const COOLDOWN = 1000;
 
   useEffect(() => {
     const loadQuizData = () => {
@@ -47,7 +56,51 @@ const Challenge = () => {
     };
 
     loadQuizData();
+    _subscribeToGyroscope();
+
+    return () => {
+      _unsubscribeFromGyroscope();
+    };
   }, [level]);
+
+  const _subscribeToGyroscope = () => {
+    Gyroscope.setUpdateInterval(100);
+    const subscription = Gyroscope.addListener((gyroscopeData) => {
+      setGyroscopeData(gyroscopeData);
+      handleGyroscopeData(gyroscopeData);
+    });
+    setSubscription(subscription);
+  };
+
+  const _unsubscribeFromGyroscope = () => {
+    subscription && subscription.remove();
+    setSubscription(null);
+  };
+
+  const handleGyroscopeData = (data) => {
+    // First, check whether quizData has been loaded.
+    if (quizData.length === 0) return;
+
+    const currentTime = Date.now();
+    if (currentTime - lastGestureTime < COOLDOWN) {
+      return; // If within the cooldown time, new gestures will not be processed.
+    }
+
+    // Detect the shaking direction of the phone
+    if (data.y > THRESHOLD) {
+      // Shaking to the left - Der
+      setLastGestureTime(currentTime);
+      handleAnswer('der');
+    } else if (data.x < -THRESHOLD) {
+      // Shaking backward - Die
+      setLastGestureTime(currentTime);
+      handleAnswer('die');
+    } else if (data.y < -THRESHOLD) {
+      // Shaking to the right - Das
+      setLastGestureTime(currentTime);
+      handleAnswer('das');
+    }
+  };
 
   const handleCancel = () => {
     Alert.alert(
@@ -61,6 +114,12 @@ const Challenge = () => {
   };
 
   const handleAnswer = (selectedArticle) => {
+    // Add a safety check
+    if (!quizData || !quizData[currentQuizIndex]) {
+      console.error('Quiz data not ready');
+      return;
+    }
+
     setInputValue(selectedArticle);
     const currentQuizItem = quizData[currentQuizIndex];
 
@@ -141,6 +200,15 @@ const Challenge = () => {
         disabledButtons={disabledButtons}
         style={styles.artikelBtns}
       />
+
+      <View style={styles.gestureHint}>
+        <Text style={styles.hintText}>Oder bewege dein Handy:</Text>
+        <View style={styles.gestureHintText}>
+          <Text style={styles.hintText}>Links → Der, </Text>
+          <Text style={styles.hintText}>Nach hinten → Die, </Text>
+          <Text style={styles.hintText}>Rechts → Das</Text>
+        </View>
+      </View>
     </SafeAreaView>
   );
 };
@@ -201,6 +269,23 @@ const styles = StyleSheet.create({
     fontSize: theme.font.fontSizes.quiz,
     fontWeight: theme.font.fontWeight.bold,
     color: theme.colors.squirrel,
+  },
+  gestureHint: {
+    padding: 10,
+    marginBottom: 20,
+    alignItems: 'center',
+    position: 'absolute',
+    bottom: 0,
+  },
+  hintText: {
+    fontFamily: theme.font.fontFamily,
+    fontSize: theme.font.fontSizes.small,
+    color: theme.colors.oat_500,
+    marginVertical: 2,
+  },
+  gestureHintText: {
+    flex: 1,
+    flexDirection: 'row',
   },
 });
 

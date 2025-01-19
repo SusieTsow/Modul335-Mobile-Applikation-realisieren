@@ -24,6 +24,14 @@
     "web": {
       "favicon": "./assets/icons/favicon.png"
     },
-    "plugins": ["expo-font"]
+    "plugins": [
+      ["expo-font"],
+      [
+        "expo-sensors",
+        {
+          "motionPermission": "Allow $(PRODUCT_NAME) to access your device motion"
+        }
+      ]
+    ]
   }
 }

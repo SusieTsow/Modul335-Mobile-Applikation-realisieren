@@ -22,6 +22,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { useNavigation } from '@react-navigation/native';
+import { debounce } from 'lodash';
 
 import theme from '../constants/theme';
 import Btn from '../components/atom/Btn';
@@ -94,14 +95,13 @@ const App = () => {
     }
   }, [appIsReady, fontsLoaded]);
 
-  const handleAuth = () => {
+  const handleAuth = debounce(() => {
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
     if (!emailRegex.test(email)) {
       Alert.alert('Invalid Email', 'Please enter a valid email address');
       return;
     }
 
-    // Check if the password is at least 6 characters long
     if (isLogin) {
       signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
@@ -123,7 +123,7 @@ const App = () => {
           Alert.alert('Error', error.message);
         });
     }
-  };
+  }, 500);
 
   // If the app is not ready, return null
   if (!appIsReady || !fontsLoaded || initializing) {

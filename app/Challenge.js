@@ -13,6 +13,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { getDatabase, ref, set, update } from 'firebase/database';
 import { getAuth } from 'firebase/auth';
 import { Gyroscope } from 'expo-sensors';
+import { debounce } from 'lodash';
 import PrgrsBar from '../components/atom/PrgrsBar';
 import ArticleBtns from '../components/block/ArticleBtns';
 import theme from '../constants/theme';
@@ -41,9 +42,9 @@ const Challenge = () => {
   const [lastGestureTime, setLastGestureTime] = useState(0);
 
   // Set the threshold for shake detection.
-  const THRESHOLD = 1.5;
+  const THRESHOLD = 2.5;
   // Set the cooldown time (milliseconds) for gesture triggering.
-  const COOLDOWN = 1000;
+  const COOLDOWN = 2000;
 
   useEffect(() => {
     const loadQuizData = () => {
@@ -77,16 +78,15 @@ const Challenge = () => {
     setSubscription(null);
   };
 
-  const handleGyroscopeData = (data) => {
-    // First, check whether quizData has been loaded.
+  const handleGyroscopeData = debounce((data) => {
+    // Handle the gyroscope data and answer selection logic
     if (quizData.length === 0) return;
 
     const currentTime = Date.now();
     if (currentTime - lastGestureTime < COOLDOWN) {
-      return; // If within the cooldown time, new gestures will not be processed.
+      return;
     }
 
-    // Detect the shaking direction of the phone
     if (data.y > THRESHOLD) {
       // Shaking to the left - Der
       setLastGestureTime(currentTime);
@@ -100,7 +100,7 @@ const Challenge = () => {
       setLastGestureTime(currentTime);
       handleAnswer('das');
     }
-  };
+  }, 500); // Set the debounce delay (500ms)
 
   const handleCancel = () => {
     Alert.alert(

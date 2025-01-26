@@ -6,9 +6,7 @@ This project is a React Native application that provides various levels of chall
 
 ## Video Demonstration
 
-## Video Demonstration
-
-<iframe width="600" height="315" src="https://www.youtube.com/embed/KX7eXEa4Sxs" frameborder="0" allowfullscreen></iframe>
+[![Watch the video](https://img.youtube.com/vi/KX7eXEa4Sxs/maxresdefault.jpg)](https://www.youtube.com/watch?v=KX7eXEa4Sxs)
 
 ## Features
 

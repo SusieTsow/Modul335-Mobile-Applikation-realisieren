@@ -4,6 +4,13 @@ Informatik EFZ Module an der Benedict Schule
 
 This project is a React Native application that provides various levels of challenges in different categories. Users can track their progress and navigate through different levels.
 
+## Video Demonstration
+
+<video width="600" controls>
+  <source src="./assets/video/dWas-Demo.MP4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+
 ## Features
 
 - Implement user authentication with Firebase.

@@ -6,9 +6,9 @@ This project is a React Native application that provides various levels of chall
 
 ## Video Demonstration
 
-<video width="600" controls>
-  <iframe width="230" height="420" src="https://youtube.com/shorts/KX7eXEa4Sxs?feature=share" frameborder="0" allowfullscreen></iframe>
-</video>
+## Video Demonstration
+
+<iframe width="600" height="315" src="https://www.youtube.com/embed/KX7eXEa4Sxs" frameborder="0" allowfullscreen></iframe>
 
 ## Features
 
